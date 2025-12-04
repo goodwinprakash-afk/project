@@ -6,7 +6,6 @@
     <title>Bible Verse by Name</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <style>
-        /* Animated Background */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -15,22 +14,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: image-set(hi.pgn) background-size: 400% 400%;
-            animation: gradientMove 10s ease infinite;
-        }
 
-        @keyframes gradientMove {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
+            background-image: url("hi.pgn");
+            /* your image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
         .container {
@@ -65,7 +55,7 @@
         }
 
         input:focus {
-            border-color: #5725d7;
+            border-color: #170545;
             box-shadow: 0 0 12px #08658666;
             outline: none;
             transform: translateY(-1px);
