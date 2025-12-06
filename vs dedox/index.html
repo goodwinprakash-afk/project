@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>learner</title>
+</head>
+<style>
+    body {
+        margin: 40px;
+        padding: 20px;
+        border-width: 5px;
+
+        background-image: url(nature-3616194_1920.jpg);
+        background-size: cover;
+        background-attachment: fixed;
+        background-attachment: fixed;
+        background-position: center;
+    }
+
+    .container {
+        text-align: center;
+        color: rgb(254, 247, 247);
+        width: 96%;
+        max-width: 720px;
+        margin: 20px auto;
+    }
+
+    h1 {
+        font-size: 48px;
+        margin-bottom: 12px;
+        fornt-size: bold;
+        text-shadow: 2px 2px 4px #3c3939;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    input {
+        padding: 12px 14px;
+        width: 260px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #aaa;
+        transition: box-shadow 0.25s, border-color 0.25s, transform 0.12s;
+    }
+
+    input:focus {
+        border-color: #170545;
+        box-shadow: 0 0 12px #08658666;
+        outline: none;
+        transform: translateY(-1px);
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 16px;
+        margin-top: 4px;
+        border: none;
+        background: #06070b;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    button:hover {
+        background: #3357e0;
+        transform: scale(1.05);
+    }
+
+    #result {
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: 600;
+        color: #222;
+        padding: 20px;
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.12);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    #result.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 520px) {
+        input {
+            width: 100%;
+        }
+
+        .controls {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        h1 {
+            font-size: 22px;
+        }
+    }
+</style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>TODAY WORD FOR YOU</h1>
+
+        <div class="controls">
+            <input id="nameInput" placeholder="Enter your good name" aria-label="Enter your good Name" />
+            <button id="btnGet">DAY Verse</button>
+        </div>
+
+        <div id="result" aria-live="polite"></div>
+    </div>
+    <script>
+        // 100 verses array (complete)
+        const verses = [
+            "Ask and it will be given to you — Matthew 7:7",
+            "Be strong and courageous — Joshua 1:9",
+            "Cast all your anxiety on Him — 1 Peter 5:7",
+            "Delight yourself in the Lord — Psalm 37:4",
+            "Every good gift is from above — James 1:17",
+            "Fear not, for I am with you — Isaiah 41:10",
+            "God is our refuge and strength — Psalm 46:1",
+            "He heals the brokenhearted — Psalm 147:3",
+            "I can do all things through Christ — Philippians 4:13",
+            "Jesus Christ is the same yesterday, today, and forever — Hebrews 13:8",
+            "The Lord is my shepherd — Psalm 23:1",
+            "The Lord will fight for you — Exodus 14:14",
+            "The joy of the Lord is your strength — Nehemiah 8:10",
+            "The Lord is near to all who call on Him — Psalm 145:18",
+            "Trust in the Lord with all your heart — Proverbs 3:5",
+            "The Lord bless you and keep you — Numbers 6:24",
+            "With God all things are possible — Matthew 19:26",
+            "The Lord is good, a refuge in times of trouble — Nahum 1:7",
+            "The Lord will guide you always — Isaiah 58:11",
+            "My grace is sufficient for you — 2 Corinthians 12:9",
+            "The Lord is faithful — 2 Thessalonians 3:3",
+            "You are the light of the world — Matthew 5:14",
+            "Cast your burden on the Lord — Psalm 55:22",
+            "Commit your way to the Lord — Psalm 37:5",
+            "In all your ways acknowledge Him — Proverbs 3:6",
+            "Let all that you do be done in love — 1 Corinthians 16:14",
+            "The Lord is gracious and compassionate — Psalm 103:8",
+            "Be still and know that I am God — Psalm 46:10",
+            "You are fearfully and wonderfully made — Psalm 139:14",
+            "The Lord will provide — Genesis 22:14",
+            "Love never fails — 1 Corinthians 13:8",
+            "He gives strength to the weary — Isaiah 40:29",
+            "The peace of God will guard your heart — Philippians 4:7",
+            "The righteous cry out, and the Lord hears — Psalm 34:17",
+            "The Lord is close to the brokenhearted — Psalm 34:18",
+            "Let your light shine before others — Matthew 5:16",
+            "If God is for us, who can be against us — Romans 8:31",
+            "The Lord is my strength and my shield — Psalm 28:7",
+            "The Lord will keep you from all harm — Psalm 121:7",
+            "Do not let your hearts be troubled — John 14:1",
+            "God will supply all your needs — Philippians 4:19",
+            "The Lord is my helper — Hebrews 13:6",
+            "God is love — 1 John 4:8",
+            "The Lord stands with me — 2 Timothy 4:17",
+            "The Lord surrounds His people — Psalm 125:2",
+            "Your Word is a lamp to my feet — Psalm 119:105",
+            "The Lord gives wisdom — Proverbs 2:6",
+            "The Lord upholds all who fall — Psalm 145:14",
+            "Blessed are the peacemakers — Matthew 5:9",
+            "Blessed are the pure in heart — Matthew 5:8",
+            "Thanks be to God, who gives us victory — 1 Corinthians 15:57",
+            "Those who hope in the Lord renew strength — Isaiah 40:31",
+            "The Lord is my rock — Psalm 18:2",
+            "I am the Lord who heals you — Exodus 15:26",
+            "I know the plans I have for you — Jeremiah 29:11",
+            "The Lord watches over you — Psalm 121:5",
+            "The name of the Lord is a strong tower — Proverbs 18:10",
+            "Bless the Lord, O my soul — Psalm 103:1",
+            "The Lord hears when I call — Psalm 4:3",
+            "God is our refuge — Psalm 62:8",
+            "The Lord is merciful — Luke 6:36",
+            "The Lord is my light and salvation — Psalm 27:1",
+            "He will never leave you nor forsake you — Deuteronomy 31:6",
+            "He will cover you with His feathers — Psalm 91:4",
+            "You will keep in perfect peace — Isaiah 26:3",
+            "The Lord is righteous — Psalm 145:17",
+            "The Lord is slow to anger — Psalm 103:8",
+            "God is patient — 2 Peter 3:9",
+            "We walk by faith, not by sight — 2 Corinthians 5:7",
+            "Faith comes by hearing — Romans 10:17",
+            "The Lord is my portion — Lamentations 3:24",
+            "God works all things for good — Romans 8:28",
+            "He will strengthen and help you — Isaiah 41:10",
+            "The Lord will answer you — Isaiah 58:9",
+            "Call to Me and I will answer you — Jeremiah 33:3",
+            "He forgives all your sins — Psalm 103:3",
+            "The Lord is my defender — Psalm 59:9",
+            "God gives wisdom generously — James 1:5",
+            "The Lord sustains the righteous — Psalm 55:22",
+            "His love endures forever — Psalm 136:1",
+            "The Lord is my deliverer — Psalm 18:2",
+            "He strengthens your heart — Psalm 31:24",
+            "The Lord is near — Philippians 4:5",
+            "The Lord is my refuge — Psalm 91:2",
+            "He keeps you in perfect peace — Isaiah 26:3",
+            "The Lord is my helper — Psalm 118:7",
+            "He restores my soul — Psalm 23:3",
+            "The Lord protects you — Psalm 121:7",
+            "He gives peace at all times — 2 Thessalonians 3:16",
+            "The Lord is my shield — Proverbs 30:5",
+            "He gives rest to the weary — Matthew 11:28",
+            "His mercies are new every morning — Lamentations 3:22",
+            "The Lord establishes your steps — Psalm 37:23",
+            "He crowns you with love and mercy — Psalm 103:4",
+            "The Lord is mighty to save — Zephaniah 3:17",
+            "The Lord goes before you — Deuteronomy 31:8",
+            "The Lord is trustworthy — Psalm 33:4",
+            "He is faithful to all His promises — Psalm 145:13",
+            "The Lord holds your hand — Isaiah 41:13"
+        ];
+
+        // simple hash function to map name -> index
+        function hashName(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = (hash + name.charCodeAt(i) * (i + 1)) >>> 0; // keep as unsigned 32-bit
+            }
+            return hash;
+        }
+
+        // get DOM refs
+        const input = document.getElementById('nameInput');
+        const resultBox = document.getElementById('result');
+        const btn = document.getElementById('btnGet');
+
+        function showText(text) {
+            resultBox.classList.remove('show'); // reset
+            // small delay to allow animation reset
+            setTimeout(() => {
+                resultBox.textContent = text;
+                resultBox.classList.add('show');
+            }, 60);
+        }
+
+        function getVerse() {
+            const name = input.value.trim();
+            if (!name) {
+                showText("Please enter a name.");
+                return;
+            }
+            const index = hashName(name) % verses.length;
+            showText(verses[index]);
+        }
+
+        // Allow Enter key to submit
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') getVerse();
+        });
+
+        btn.addEventListener('click', getVerse);
+    </script>
+</body>
+
+</html>
+</style>
+
+<body>
+    <h1><button id="settingsBtn" class="settings-btn">⚙ Settings</button>
+
+        <div id="Settingsbox" class="settings-box">
+            <label>change background:</label>
+            <input type="file" id="bginput"><br><br>
+
+            <label>fornt-size:</label>
+            <input type="range" id="fontsizeInput" min="12" max="72" value="48"> <br><br>
+
+            ><button id="closesettings"></button>
+
+        </div>
+        <style>
+            .settings-btn {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                background: regba(0, 0, 0, 0.5);
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+
+                color: white;
+            }
+
+            .settings-box {
+                display: none;
+                position: fixed;
+                top: 60px;
+                right: 20px;
+                background: white(255, 255, 255, 0.9);
+                transform: translate(-50%, -50%);
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                text-align: center;
+            }
+        </style>
+    </h1>
+    <script>
+        // open settings
+        document.getElementById("settingsBtn").onclick = () => {
+            document.getElementById("settingsBox").style.display = "block";
+        };
+
+        // close settings
+        document.getElementById("closeSettings").onclick = () => {
+            document.getElementById("settingsBox").style.display = "none";
+        };
+
+        // change background image
+        document.getElementById("bgInput").onchange = function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.body.style.backgroundImage = `url('${e.target.result}')`;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // change result font size
+        document.getElementById("fontSize").oninput = function () {
+            document.getElementById("result").style.fontSize = this.value + "px";
+        };
+
+    </script>
+
+    <body>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="homeTab">Home</button>
+            <button class="tab-btn" data-tab="bibleTab">Bible Chapters</button>
+        </div>
+        <div id="homeTab" class="tab-page active">
+            <!-- your full TODAY WORD FOR YOU content here -->
+        </div>
+        <div id="bibleTab" class="tab-page">
+            <h2 style="color:white;">Bible Chapters</h2>
+
+            <select id="bookSelect">
+                <option value="">old testament</option>
+                <option value="Genesis">Genesis</option>
+                <option value="Exodus">Exodus</option>
+                <option value="Leviticus">Leviticus</option>
+                <option value="Numbers">Numbers</option>
+                <option value="Deuteronomy">Deuteronomy</option>
+                <option value="Joshua">Joshua</option>
+                <option value="Judges">Judges</option>
+                <option value="Ruth">Ruth</option>
+                <option value="1 Samuel">1 Samuel</option>
+                <option value="2 Samuel">2 Samuel</option>
+                <option value="1 Kings">1 Kings</option>
+                <option value="2 Kings">2 Kings</option>
+                <option value="1 Chronicles">1 Chronicles</option>
+
+                <option value="2 Chronicles">2 Chronicles</option>
+                <option value="Ezra">Ezra</option>
+                <option value="Nehemiah">Nehemiah</option>
+                <option value="Esther">Esther</option>
+                <option value="Job">Job</option>
+                <option value="Psalms">Psalms</option>
+                <option value="Proverbs">Proverbs</option>
+                <option value="Ecclesiastes">Ecclesiastes</option>
+                <option value="Song of Solomon">Song of Solomon</option>
+                <option value="Wisdom">Wisdom</option>
+                <option value="Sirach">Sirach</option>
+                <option value="Isaiah">Isaiah</option>
+                <option value="Jeremiah">Jeremiah</option>
+                <option value="Lamentations">Lamentations</option>
+                <option value="Ezekiel">Ezekiel</option>
+                <option value="Daniel">Daniel</option>
+                <option value="Hosea">Hosea</option>
+                <option value="Joel">Joel</option>
+                <option value="Amos">Amos</option>
+                <option value="Obadiah">Obadiah</option>
+                <option value="Jonah">Jonah</option>
+                <option value="Micah">Micah</option>
+                <option value="Nahum">Nahum</option>
+                <option value="Habakkuk">Habakkuk</option>
+
+                <option value="Zephaniah">Zephaniah</option>
+                <option value="Haggai">Haggai</option>
+                <option value="Zechariah">Zechariah</option>
+                <option value="Malachi">Malachi</option>
+                <option value="">new testament</option>
+                <option value="Matthew">Matthew</option>
+                <option value="Mark">Mark</option>
+                <option value="Luke">Luke</option>
+                <option value="John">John</option>
+                <option value="Acts">Acts</option>
+
+                <option value="Romans">Romans</option>
+                <option value="1 Corinthians">1 Corinthians</option>
+                <option value="2 Corinthians">2 Corinthians</option>
+                <option value="Galatians">Galatians</option>
+                <option value="Ephesians">Ephesians</option>
+                <option value="Philippians">Philippians</option>
+                <option value="Colossians">Colossians</option>
+                <option value="1 Thessalonians">1 Thessalonians</option>
+                <option value="2 Thessalonians">2 Thessalonians</option>
+                <option value="1 Timothy">1 Timothy</option>
+                <option value="2 Timothy">2 Timothy</option>
+                <option value="Titus">Titus</option>
+                <option value="Philemon">Philemon</option>
+                <option value="Hebrews">Hebrews</option>
+                <option value="James">James</option>
+                <option value="1 Peter">1 Peter</option>
+                <option value="2 Peter">2 Peter</option>
+                <option value="1 John">1 John</option>
+                <option value="2 John">2 John</option>
+                <option value="3 John">3 John</option>
+                <option value="Jude">Jude</option>
+                <option value="Revelation">Revelation</option>
+
+
+
+            </select>
+
+            <select id="chapterSelect">
+                <option value="">Select Chapter</option>
+            </select>
+
+            <div id="chapterDisplay"></div>
+        </div>
+
+    </body>
+    <style>
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 10px 14px;
+            border: none;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: #2f6df6;
+        }
+
+        .tab-page {
+            display: none;
+        }
+
+        .tab-page.active {
+            display: block;
+        }
+    </style>
+    <script>// TAB SWITCHING
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        const tabPages = document.querySelectorAll(".tab-page");
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const tab = btn.dataset.tab;
+
+                tabButtons.forEach(b => b.classList.remove("active"));
+                tabPages.forEach(p => p.classList.remove("active"));
+
+                btn.classList.add("active");
+                document.getElementById(tab).classList.add("active");
+            });
+        });
+
+        const bookSelect = document.getElementById("bookSelect");
+        const chapterSelect = document.getElementById("chapterSelect");
+        const versesDisplay = document.getElementById("versesDisplay");
+
+        // Load books
+        for (let book in bible) {
+            bookSelect.innerHTML += `<option value="${book}">${book}</option>`;
+        }
+        bookSelect.addEventListener("change", () => {
+            const book = bookSelect.value;
+            chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+            versesDisplay.innerHTML = '';
+
+            if (book && bible[book]) {
+                const chapters = bible[book];
+                for (let i = 1; i <= chapters.length; i++) {
+                    chapterSelect.innerHTML += `<option value="${i}">${i}</option>`;
+                }
+            }
+        });
+
+        chapterSelect.onchange = () => {
+            const book = bookSelect.value;
+            const chapter = chapterSelect.value;
+
+            if (!chapter) return;
+
+            const verses = bible[book][chapter];
+
+            let html = `<h3 style='color:white;'>${book} - Chapter ${chapter}</h3>`;
+
+            verses.forEach((v, index) => {
+                html += `<p style="color:white; font-size:18px;"><b>${index + 1}</b>. ${v}</p>`;
+            });
+
+            versesDisplay.innerHTML = html;
+        };
+
+
+
+    </script>
+</body>
+
+</html>
